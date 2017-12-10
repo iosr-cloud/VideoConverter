@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.File;
+import java.io.Serializable;
 import java.net.URL;
 
 @Service
@@ -24,7 +25,10 @@ public class MessageHandler {
     @Autowired
     private VideoDataRepository videoDataRepository;
 
-    public void handleMessage(EventMessage eventMessage) {
+    public void handleMessage(Serializable message) {
+
+        EventMessage eventMessage = (EventMessage) message;
+
         //convert
         File convertedFile = videoConverter.convert(eventMessage.getResourceURL(), eventMessage.getConversionType());
 

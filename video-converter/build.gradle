@@ -36,6 +36,7 @@ dependencies {
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	compile group: 'commons-io', name: 'commons-io', version: '2.6'
     compile group: 'org.postgresql', name: 'postgresql', version: '9.4-1201-jdbc41'
+    compile group: 'com.amazonaws', name: 'amazon-sqs-java-messaging-lib', version: '1.0.0'
 }
 
 dependencyManagement {
