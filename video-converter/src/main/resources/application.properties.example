@@ -1,0 +1,4 @@
+aws.queue.name=xxx
+aws.queue.access_key_id=xxx
+aws.queue.secret=xxx
+aws.region=xxx

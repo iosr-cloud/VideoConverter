@@ -33,6 +33,7 @@ public class ReceiveScheduler {
                 .map(this::convertJSONToMessage)
                 .forEach(message -> {
                     logger.info("Received message from SQS");
+                    logger.info("Received message user id: " + message.getId());
                     logger.info("Received message URL: " + message.getResourceURL());
                     logger.info("Received message conversion type: " + message.getConversionType());
                 });

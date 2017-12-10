@@ -12,8 +12,9 @@ import java.io.Serializable;
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
-public final class EventMessage implements Serializable{
+public final class EventMessage implements Serializable {
 
+    private final long id;
     private final String resourceURL;
     private final VideoConversionType conversionType;
 }
