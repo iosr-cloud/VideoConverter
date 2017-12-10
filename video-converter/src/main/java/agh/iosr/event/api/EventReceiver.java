@@ -1,8 +1,12 @@
 package agh.iosr.event.api;
 
-import agh.iosr.event.model.EventMessage;
+import com.amazonaws.services.sqs.model.Message;
+
+import java.util.List;
 
 public interface EventReceiver {
 
-    EventMessage receiveEvent();
+    List<Message> receiveEventMessages();
+
+    void deleteEventMessages(List<Message> messages);
 }
