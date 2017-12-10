@@ -8,6 +8,7 @@ import agh.iosr.storage.impl.S3StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.File;
 import java.net.URL;
 
@@ -25,14 +26,19 @@ public class MessageHandler {
 
     public void handleMessage(EventMessage eventMessage) {
         //convert
-        File convertedFile = videoConverter.convert(eventMessage.getResourceURL().toString(), eventMessage.getConversionType());
+        File convertedFile = videoConverter.convert(eventMessage.getResourceURL(), eventMessage.getConversionType());
 
         //upload
         URL fileUrl = s3StorageService.uploadFile(convertedFile.getName(), convertedFile);
 
         //db
-        VideoData data = videoDataRepository.findOne(eventMessage.getId());
-        data.setConvertedFilePath(fileUrl.toString());
+        saveToDatabase(eventMessage.getId(), fileUrl.toString());
+    }
+
+    @Transactional
+    public void saveToDatabase(long id, String fileUrl) {
+        VideoData data = videoDataRepository.findOne(id);
+        data.setConvertedFilePath(fileUrl);
         videoDataRepository.save(data);
     }
 }

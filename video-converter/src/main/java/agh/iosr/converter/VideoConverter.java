@@ -13,7 +13,7 @@ public class VideoConverter {
 
     public File convert(String url, VideoConversionType videoConversionType) {
 
-        File convertedFile = new File(".");
+        File convertedFile = new File("/tmp/" + System.currentTimeMillis());
 
         try {
             FileUtils.copyURLToFile(new URL(url), convertedFile);
