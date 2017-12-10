@@ -2,6 +2,7 @@ package agh.iosr.event.impl;
 
 import agh.iosr.event.api.EventReceiver;
 import agh.iosr.event.model.EventMessage;
+import agh.iosr.handler.MessageHandler;
 import com.amazonaws.services.sqs.model.Message;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -18,6 +19,9 @@ public class ReceiveScheduler {
 
     @Autowired
     private EventReceiver eventReceiver;
+
+    @Autowired
+    private MessageHandler handler;
 
     private Logger logger = LoggerFactory.getLogger(ReceiveScheduler.class);
     private ObjectMapper mapper = new ObjectMapper();
@@ -36,6 +40,7 @@ public class ReceiveScheduler {
                     logger.info("Received message user id: " + message.getId());
                     logger.info("Received message URL: " + message.getResourceURL());
                     logger.info("Received message conversion type: " + message.getConversionType());
+                    handler.handleMessage(message);
                 });
 
         eventReceiver.deleteEventMessages(messages);
