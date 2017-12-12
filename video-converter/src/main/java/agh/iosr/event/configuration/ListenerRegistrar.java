@@ -6,20 +6,17 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.Session;
 
-@Configuration
-@Import(EventQueueConfiguration.class)
-@ComponentScan(basePackageClasses = {EventMessageListener.class})
+@Component
 @RequiredArgsConstructor
-public class ListenerRegisterConfiguration {
+public class ListenerRegistrar implements CommandLineRunner {
 
     @Value("${aws.queue.name}")
     private String queueName;
@@ -28,14 +25,15 @@ public class ListenerRegisterConfiguration {
 
     private final EventMessageListener eventMessageListener;
 
-    private Logger logger = LoggerFactory.getLogger(ListenerRegisterConfiguration.class);
+    private Logger logger = LoggerFactory.getLogger(ListenerRegistrar.class);
+    private Session session;
+    private MessageConsumer consumer;
 
-    @PostConstruct
-    private void registerListeners(){
-
+    @Override
+    public void run(String... args) throws Exception {
         try {
-            Session session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
-            MessageConsumer consumer = session.createConsumer(session.createQueue(queueName));
+            session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
+            consumer = session.createConsumer(session.createQueue(queueName));
 
             //register this callback
             consumer.setMessageListener(eventMessageListener);
@@ -45,6 +43,18 @@ public class ListenerRegisterConfiguration {
 
         } catch (JMSException e) {
             logger.error("Error creating connection to SQS");
+            e.printStackTrace();
+        }
+    }
+
+    @PreDestroy
+    private void destroy(){
+        try {
+            consumer.close();
+            session.close();
+            connection.close();
+        } catch (JMSException e) {
+            logger.error("Couldn't close SQS connection");
             e.printStackTrace();
         }
     }
