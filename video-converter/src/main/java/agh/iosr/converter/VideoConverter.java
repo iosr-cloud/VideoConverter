@@ -17,8 +17,11 @@ public class VideoConverter {
 
         try {
             FileUtils.copyURLToFile(new URL(url), convertedFile);
-            //do some converting stuff
-        } catch (IOException e) {
+
+            //work simulation for now
+            Thread.sleep(1000);
+
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
         return convertedFile;

@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+import javax.jms.Message;
 import java.io.Serializable;
 
 @Getter
