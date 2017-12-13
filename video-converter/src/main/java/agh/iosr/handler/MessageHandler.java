@@ -24,6 +24,7 @@ public class MessageHandler {
     private Logger logger = LoggerFactory.getLogger(MessageHandler.class);
 
 
+    @Transactional
     public void handleMessage(EventMessage message) {
 
         logger.info("Downloading file from url: " + message.getResourceURL());
@@ -40,7 +41,6 @@ public class MessageHandler {
         logger.info("Saved converted file to storage: " + fileUrl.getPath());
     }
 
-    @Transactional
     private void saveToDatabase(long id, String fileUrl) {
         VideoData data = videoDataRepository.findOne(id);
         if(data != null){
