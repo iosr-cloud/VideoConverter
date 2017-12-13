@@ -6,6 +6,8 @@ import agh.iosr.model.VideoData;
 import agh.iosr.repository.VideoDataRepository;
 import agh.iosr.storage.impl.S3StorageService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -17,12 +19,14 @@ import java.net.URL;
 public class MessageHandler {
 
     private final S3StorageService s3StorageService;
-
     private final VideoConverter videoConverter;
-
     private final VideoDataRepository videoDataRepository;
+    private Logger logger = LoggerFactory.getLogger(MessageHandler.class);
+
 
     public void handleMessage(EventMessage message) {
+
+        logger.info("Downloading file from url: " + message.getResourceURL());
 
         //convert
         File convertedFile = videoConverter.convert(message.getResourceURL(), message.getConversionType());
@@ -32,12 +36,19 @@ public class MessageHandler {
 
         //db
         saveToDatabase(message.getId(), fileUrl.toString());
+
+        logger.info("Saved converted file to storage: " + fileUrl.getPath());
     }
 
     @Transactional
     private void saveToDatabase(long id, String fileUrl) {
         VideoData data = videoDataRepository.findOne(id);
-        data.setConvertedFilePath(fileUrl);
-        videoDataRepository.save(data);
+        if(data != null){
+            data.setConvertedFilePath(fileUrl);
+            data.setStatus(true);
+            logger.info("Updated path and status in database");
+        }else{
+            logger.info("Couldn't find records in database");
+        }
     }
 }
