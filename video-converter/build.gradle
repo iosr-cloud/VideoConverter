@@ -20,14 +20,17 @@ sourceCompatibility = 1.8
 
 repositories {
 	mavenCentral()
+	flatDir {
+		dirs 'lib'
+	}
 }
-
 
 ext {
 	springCloudVersion = 'Edgware.RELEASE'
 }
 
 dependencies {
+	compile name: 'jave-1.0.2'
 	compile('com.amazonaws:aws-java-sdk:1.11.245')
 	compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.springframework.boot:spring-boot-starter-data-jpa')

@@ -1,6 +1,7 @@
 package agh.iosr.converter;
 
 import agh.iosr.model.VideoConversionType;
+import it.sauronsoftware.jave.*;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 
@@ -11,17 +12,26 @@ import java.net.URL;
 @Service
 public class VideoConverter {
 
-    public File convert(String url, VideoConversionType videoConversionType) {
+    public File convert(String url, VideoConversionType videoConversionType){
 
-        File convertedFile = new File("/tmp/" + System.currentTimeMillis());
+        File inputFile = new File("/tmp/" + System.currentTimeMillis());
+        File convertedFile = new File(inputFile.getPath() + ".flv");
 
         try {
-            FileUtils.copyURLToFile(new URL(url), convertedFile);
+            FileUtils.copyURLToFile(new URL(url), inputFile);
+            VideoAttributes video = new VideoAttributes();
+            video.setCodec("flv");
+            video.setBitRate(500000);
+            video.setFrameRate(10);
+            video.setSize(new VideoSize(800,800));
+            EncodingAttributes attrs = new EncodingAttributes();
+            attrs.setFormat("flv");
+            attrs.setVideoAttributes(video);
+            attrs.setOffset(2.0f);
+            Encoder encoder = new Encoder();
+            encoder.encode(inputFile, convertedFile, attrs);
 
-            //work simulation for now
-            Thread.sleep(1000);
-
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException | EncoderException e) {
             e.printStackTrace();
         }
         return convertedFile;
