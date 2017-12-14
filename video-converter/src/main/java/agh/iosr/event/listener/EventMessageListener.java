@@ -2,10 +2,8 @@ package agh.iosr.event.listener;
 
 import agh.iosr.event.model.EventMessage;
 import agh.iosr.handler.MessageHandler;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.jms.JMSException;
@@ -16,12 +14,11 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class EventMessageListener implements MessageListener {
 
     private final MessageHandler messageHandler;
-
-    private ObjectMapper objectMapper = new ObjectMapper();
-    private Logger logger = LoggerFactory.getLogger(EventMessageListener.class);
+    private final EventMessageConverter converter;
 
     @Override
     public void onMessage(Message message) {
@@ -33,27 +30,22 @@ public class EventMessageListener implements MessageListener {
         try {
 
             TextMessage textMessage = (TextMessage) message;
-            EventMessage eventMessage = convertTextMessageToEventMessage(textMessage);
+            EventMessage eventMessage = converter.convertTextMessageToEventMessage(textMessage);
 
-            logger.info("Received message from SQS");
-            logger.info("Received message user id: " + eventMessage.getId());
-            logger.info("Received message URL: " + eventMessage.getResourceURL());
-            logger.info("Received message conversion type: " + eventMessage.getConversionType());
+            log.info("Received message from SQS");
+            log.info("Received message user id: " + eventMessage.getId());
+            log.info("Received message URL: " + eventMessage.getResourceURL());
+            log.info("Received message conversion type: " + eventMessage.getConversionType());
 
             messageHandler.handleMessage(eventMessage);
 
             message.acknowledge();
-            logger.info("Acknowledged message " + message.getJMSMessageID());
+            log.info("Acknowledged message " + message.getJMSMessageID());
 
         } catch (JMSException | IOException e) {
-            logger.error("Error processing message: " + e.getMessage());
+            log.error("Error processing message: " + e.getMessage());
             e.printStackTrace();
         }
-    }
-
-    private EventMessage convertTextMessageToEventMessage(TextMessage message) throws JMSException, IOException {
-        String JSON = message.getText();
-        return objectMapper.readValue(JSON, EventMessage.class);
     }
 
 }

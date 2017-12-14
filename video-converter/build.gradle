@@ -37,6 +37,8 @@ dependencies {
     runtime('org.springframework.boot:spring-boot-devtools')
 	compileOnly('org.projectlombok:lombok')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
+	testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: '1.7.3'
+	testCompile group: 'org.powermock', name: 'powermock-api-mockito', version: '1.7.3'
 	compile group: 'commons-io', name: 'commons-io', version: '2.6'
     compile group: 'org.postgresql', name: 'postgresql', version: '9.4-1201-jdbc41'
     compile group: 'com.amazonaws', name: 'amazon-sqs-java-messaging-lib', version: '1.0.0'

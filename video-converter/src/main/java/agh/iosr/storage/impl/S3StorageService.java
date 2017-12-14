@@ -4,6 +4,7 @@ import agh.iosr.storage.api.StorageService;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +15,12 @@ import java.io.File;
 import java.net.URL;
 
 @Service
+@RequiredArgsConstructor
 public class S3StorageService implements StorageService {
 
     private Logger logger = LoggerFactory.getLogger(S3StorageService.class);
 
-    @Autowired
-    private AmazonS3 s3client;
+    private final AmazonS3 s3client;
 
     @Value("${aws.s3.bucket}")
     private String bucketName;

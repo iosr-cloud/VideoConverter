@@ -2,6 +2,7 @@ package agh.iosr.converter;
 
 import agh.iosr.model.VideoConversionType;
 import it.sauronsoftware.jave.*;
+import lombok.AllArgsConstructor;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +11,10 @@ import java.io.IOException;
 import java.net.URL;
 
 @Service
+@AllArgsConstructor
 public class VideoConverter {
+
+    private Encoder encoder;
 
     public File convert(String url, VideoConversionType videoConversionType){
 
@@ -28,10 +32,11 @@ public class VideoConverter {
             attrs.setFormat("flv");
             attrs.setVideoAttributes(video);
             attrs.setOffset(2.0f);
-            Encoder encoder = new Encoder();
             encoder.encode(inputFile, convertedFile, attrs);
 
-        } catch (IOException | EncoderException e) {
+            Thread.sleep(2000);
+
+        } catch (IOException | EncoderException | InterruptedException e) {
             e.printStackTrace();
         }
         return convertedFile;
